@@ -1,55 +1,16 @@
 import { FormEvent, useReducer, useState } from "react";
 import "./App.css";
+import { TodoActions, todoReducer } from "./features/todo";
 
-interface Task {
-  title: string;
-  id: string;
-  completed?: boolean;
-}
-
-function createTask({ title, id, completed }: Task) {
-  return { title, id, completed };
-}
-
-enum TodoActionType {
-  CREATE = "CREATE",
-  DELETE = "DELETE",
-  TOGGLE = "TOGGLE",
-}
-
-interface TodoAction {
-  type: TodoActionType;
-  payload: string;
-}
-
-function todoReducer(state: Task[], action: TodoAction) {
-  switch (action.type) {
-    case TodoActionType.CREATE:
-      return [
-        ...state,
-        createTask({ title: action.payload, id: Date.now().toString() }),
-      ];
-    case TodoActionType.DELETE:
-      return state.filter((task) => task.id !== action.payload);
-    case TodoActionType.TOGGLE:
-      return state.map((task) => {
-        if (task.id === action.payload)
-          return { ...task, completed: !task.completed };
-        return task;
-      });
-    default:
-      return state;
-  }
-}
 function App() {
-  const [tasks, dispatch] = useReducer(todoReducer, []);
+  const [tasks, dispatch] = useReducer(todoReducer, {});
 
   const [taskName, setTaskName] = useState("");
 
   function handleAdd(e: FormEvent) {
     e.preventDefault();
     if (taskName.trim() === "") return;
-    dispatch({ type: TodoActionType.CREATE, payload: taskName });
+    dispatch({ type: TodoActions.CREATE, payload: taskName });
     setTaskName("");
   }
 
@@ -79,40 +40,60 @@ function App() {
             />
           </form>
           <ul className="list-disc">
-            {tasks.map(({ id, title, completed }) => (
-              <div key={id} className="p-4">
-                <input
-                  id={id}
-                  type="checkbox"
-                  checked={completed}
-                  onChange={() => {
-                    dispatch({
-                      type: TodoActionType.TOGGLE,
-                      payload: id,
-                    });
-                  }}
-                />
-                <label
-                  htmlFor={id}
-                  className={`px-2 font-bold${
-                    completed ? " text-green-500" : " text-orange-500"
-                  }`}
-                >
-                  {title}
-                </label>
-                <button
-                  className={`opacity-0 hover:opacity-100`}
-                  onClick={() => {
-                    dispatch({
-                      type: TodoActionType.DELETE,
-                      payload: id,
-                    });
-                  }}
-                >
-                  x
-                </button>
-              </div>
-            ))}
+            {Object.entries(tasks)
+              .filter(([, { deleted }]) => !deleted)
+              .map(([id, { title, completed }]) => {
+                return (
+                  <div key={id} className="px-4 py-2 group/task">
+                    <input
+                      id={id}
+                      type="checkbox"
+                      checked={completed}
+                      onChange={() => {
+                        dispatch({
+                          type: TodoActions.TOGGLE,
+                          payload: id,
+                        });
+                      }}
+                    />
+                    <label
+                      htmlFor={id}
+                      className={`px-2 font-bold${
+                        completed ? " text-green-500" : " text-orange-500"
+                      }`}
+                    >
+                      {title}
+                    </label>
+                    <button
+                      className={`opacity-0 group-hover/task:opacity-100 px-2`}
+                      onClick={() => {
+                        const newTitle = prompt("Task name", title);
+                        if (newTitle)
+                          dispatch({
+                            type: TodoActions.UPDATE,
+                            payload: {
+                              id,
+                              title: newTitle,
+                            },
+                          });
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className={`opacity-0 group-hover/task:opacity-100 px-2`}
+                      onClick={() => {
+                        dispatch({
+                          type: TodoActions.DELETE,
+                          payload: id,
+                        });
+                      }}
+                    >
+                      x
+                    </button>
+                  </div>
+                );
+              })}
           </ul>
         </div>
       </div>
