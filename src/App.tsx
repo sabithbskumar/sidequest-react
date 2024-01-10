@@ -89,7 +89,7 @@ function App() {
                         });
                       }}
                     >
-                      x
+                      Delete
                     </button>
                   </div>
                 );
