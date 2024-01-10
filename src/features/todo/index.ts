@@ -1,12 +1,12 @@
 interface Task {
-  id: string;
   title: string;
+  date_created: string;
   completed?: boolean;
   deleted?: boolean;
 }
 
-function createTask({ id, title, completed = false }: Task) {
-  return { id, title, completed, deleted: false };
+function createTask({ date_created, title, completed = false }: Task) {
+  return { date_created, title, completed, deleted: false };
 }
 
 enum TodoActions {
@@ -41,7 +41,7 @@ function todoReducer(state: Record<string, Task>, action: TodoActionType) {
       const id = Date.now().toString();
       return {
         ...state,
-        [id]: createTask({ id, title: action.payload }),
+        [id]: createTask({ date_created: id, title: action.payload }),
       };
     }
     case TodoActions.DELETE: {
