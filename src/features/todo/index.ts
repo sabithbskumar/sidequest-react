@@ -1,12 +1,17 @@
+interface State {
+  todo: string[];
+  deleted: string[];
+  tasks: Record<string, Task>;
+}
+
 interface Task {
   title: string;
   date_created: string;
   completed?: boolean;
-  deleted?: boolean;
 }
 
 function createTask({ date_created, title, completed = false }: Task) {
-  return { date_created, title, completed, deleted: false };
+  return { date_created, title, completed };
 }
 
 enum TodoActions {
@@ -35,32 +40,50 @@ interface TodoUpdate {
 
 type TodoActionType = TodoCreate | TodoDelete | TodoToggle | TodoUpdate;
 
-function todoReducer(state: Record<string, Task>, action: TodoActionType) {
+function todoReducer(state: State, action: TodoActionType) {
   switch (action.type) {
     case TodoActions.CREATE: {
       const id = Date.now().toString();
       return {
         ...state,
-        [id]: createTask({ date_created: id, title: action.payload }),
+        tasks: {
+          ...state.tasks,
+          [id]: createTask({ title: action.payload, date_created: id }),
+        },
+        todo: [...state.todo, id],
       };
     }
     case TodoActions.DELETE: {
-      const next = { ...state };
-      next[action.payload].deleted = true;
-      return next;
+      return {
+        ...state,
+        deleted: [...state.deleted, action.payload],
+        todo: state.todo.filter((taskId) => taskId != action.payload),
+      };
     }
     case TodoActions.TOGGLE: {
-      const next = { ...state };
-      next[action.payload] = {
-        ...next[action.payload],
-        completed: !next[action.payload].completed,
+      return {
+        ...state,
+        tasks: {
+          ...state.tasks,
+          [action.payload]: {
+            ...state.tasks[action.payload],
+            completed: !state.tasks[action.payload].completed,
+          },
+        },
       };
-      return next;
     }
     case TodoActions.UPDATE: {
-      const next = { ...state };
-      next[action.payload.id].title = action.payload.title;
-      return next;
+      const { id, title } = action.payload;
+      return {
+        ...state,
+        tasks: {
+          ...state.tasks,
+          [id]: {
+            ...state.tasks[id],
+            title: title,
+          },
+        },
+      };
     }
     default:
       return state;

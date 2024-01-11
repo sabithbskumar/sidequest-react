@@ -3,8 +3,13 @@ import "./App.css";
 import { TodoActions, todoReducer } from "./features/todo";
 
 function App() {
-  const [tasks, dispatch] = useReducer(todoReducer, {});
+  const initialState = {
+    todo: [],
+    deleted: [],
+    tasks: {},
+  };
 
+  const [tasks, dispatch] = useReducer(todoReducer, initialState);
   const [taskName, setTaskName] = useState("");
 
   function handleAdd(e: FormEvent) {
@@ -40,60 +45,59 @@ function App() {
             />
           </form>
           <ul className="list-disc">
-            {Object.entries(tasks)
-              .filter(([, { deleted }]) => !deleted)
-              .map(([id, { title, completed }]) => {
-                return (
-                  <div key={id} className="px-4 py-2 group/task">
-                    <input
-                      id={id}
-                      type="checkbox"
-                      checked={completed}
-                      onChange={() => {
+            {tasks.todo.map((id) => {
+              const { title, completed } = tasks.tasks[id];
+              return (
+                <div key={id} className="px-4 py-2 group/task">
+                  <input
+                    id={id}
+                    type="checkbox"
+                    checked={completed}
+                    onChange={() => {
+                      dispatch({
+                        type: TodoActions.TOGGLE,
+                        payload: id,
+                      });
+                    }}
+                  />
+                  <label
+                    htmlFor={id}
+                    className={`px-2 font-bold${
+                      completed ? " text-green-500" : " text-orange-500"
+                    }`}
+                  >
+                    {title}
+                  </label>
+                  <button
+                    className={`opacity-0 group-hover/task:opacity-100 px-2`}
+                    onClick={() => {
+                      const newTitle = prompt("Task name", title);
+                      if (newTitle)
                         dispatch({
-                          type: TodoActions.TOGGLE,
-                          payload: id,
+                          type: TodoActions.UPDATE,
+                          payload: {
+                            id,
+                            title: newTitle,
+                          },
                         });
-                      }}
-                    />
-                    <label
-                      htmlFor={id}
-                      className={`px-2 font-bold${
-                        completed ? " text-green-500" : " text-orange-500"
-                      }`}
-                    >
-                      {title}
-                    </label>
-                    <button
-                      className={`opacity-0 group-hover/task:opacity-100 px-2`}
-                      onClick={() => {
-                        const newTitle = prompt("Task name", title);
-                        if (newTitle)
-                          dispatch({
-                            type: TodoActions.UPDATE,
-                            payload: {
-                              id,
-                              title: newTitle,
-                            },
-                          });
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className={`opacity-0 group-hover/task:opacity-100 px-2`}
-                      onClick={() => {
-                        dispatch({
-                          type: TodoActions.DELETE,
-                          payload: id,
-                        });
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                );
-              })}
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className={`opacity-0 group-hover/task:opacity-100 px-2`}
+                    onClick={() => {
+                      dispatch({
+                        type: TodoActions.DELETE,
+                        payload: id,
+                      });
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              );
+            })}
           </ul>
         </div>
       </div>
