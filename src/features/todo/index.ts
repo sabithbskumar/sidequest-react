@@ -64,6 +64,7 @@ function todoReducer(state: State, action: TodoActionType) {
       };
     }
     case TodoActions.DELETE: {
+      if (state.deleted.includes(action.payload)) return state;
       return {
         ...state,
         deleted: [...state.deleted, action.payload],
