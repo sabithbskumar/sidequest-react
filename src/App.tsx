@@ -138,17 +138,31 @@ function App() {
                   >
                     Edit
                   </button>
-                  <button
-                    className={`opacity-0 group-hover/task:opacity-100 px-2`}
-                    onClick={() => {
-                      dispatch({
-                        type: TodoActions.DELETE,
-                        payload: id,
-                      });
-                    }}
-                  >
-                    Delete
-                  </button>
+                  {tasks.deleted.includes(id) ? (
+                    <button
+                      className={`opacity-0 group-hover/task:opacity-100 px-2`}
+                      onClick={() => {
+                        dispatch({
+                          type: TodoActions.RESTORE,
+                          payload: id,
+                        });
+                      }}
+                    >
+                      Restore
+                    </button>
+                  ) : (
+                    <button
+                      className={`opacity-0 group-hover/task:opacity-100 px-2`}
+                      onClick={() => {
+                        dispatch({
+                          type: TodoActions.DELETE,
+                          payload: id,
+                        });
+                      }}
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               );
             })}

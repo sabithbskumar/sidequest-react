@@ -20,6 +20,7 @@ enum TodoActions {
   TOGGLE = "TOGGLE",
   UPDATE = "UPDATE",
   LOAD = "LOAD",
+  RESTORE = "RESTORE",
 }
 
 interface TodoCreate {
@@ -42,13 +43,18 @@ interface TodoLoadData {
   type: TodoActions.LOAD;
   payload: State;
 }
+interface TodoRestore {
+  type: TodoActions.RESTORE;
+  payload: string;
+}
 
 type TodoActionType =
   | TodoCreate
   | TodoDelete
   | TodoToggle
   | TodoUpdate
-  | TodoLoadData;
+  | TodoLoadData
+  | TodoRestore;
 
 function todoReducer(state: State, action: TodoActionType) {
   switch (action.type) {
@@ -98,6 +104,14 @@ function todoReducer(state: State, action: TodoActionType) {
     }
     case TodoActions.LOAD: {
       return action.payload;
+    }
+    case TodoActions.RESTORE: {
+      if (state.todo.includes(action.payload)) return state;
+      return {
+        ...state,
+        todo: [...state.todo, action.payload],
+        deleted: state.deleted.filter((taskId) => taskId != action.payload),
+      };
     }
     default:
       return state;
