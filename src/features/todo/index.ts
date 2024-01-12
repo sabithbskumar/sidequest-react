@@ -6,12 +6,12 @@ interface State {
 
 interface Task {
   title: string;
-  date_created: string;
+  dateCreated: string;
   completed?: boolean;
 }
 
-function createTask({ date_created, title, completed = false }: Task) {
-  return { date_created, title, completed };
+function createTask({ dateCreated, title, completed = false }: Task) {
+  return { dateCreated, title, completed };
 }
 
 enum TodoActions {
@@ -64,7 +64,7 @@ function todoReducer(state: State, action: TodoActionType) {
         ...state,
         tasks: {
           ...state.tasks,
-          [id]: createTask({ title: action.payload, date_created: id }),
+          [id]: createTask({ title: action.payload, dateCreated: id }),
         },
         todo: [...state.todo, id],
       };
