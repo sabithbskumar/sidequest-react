@@ -1,13 +1,18 @@
-import { FormEvent, useReducer, useState } from "react";
+import { FormEvent, useEffect, useReducer, useState } from "react";
 import "./App.css";
-import { TodoActions, todoReducer } from "./features/todo";
+import { State, TodoActions, todoReducer } from "./features/todo";
 
 function App() {
-  const initialState = {
+  const defaultState = {
     todo: [],
     deleted: [],
     tasks: {},
   };
+
+  const storedTasks = localStorage.getItem("tasks");
+  const initialState = storedTasks
+    ? (JSON.parse(storedTasks) as State)
+    : defaultState;
 
   const [tasks, dispatch] = useReducer(todoReducer, initialState);
   const [taskName, setTaskName] = useState("");
@@ -18,6 +23,10 @@ function App() {
     dispatch({ type: TodoActions.CREATE, payload: taskName });
     setTaskName("");
   }
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   return (
     <div className="bg-neutral-800 text-neutral-50 flex flex-col h-full">

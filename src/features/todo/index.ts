@@ -19,6 +19,7 @@ enum TodoActions {
   DELETE = "DELETE",
   TOGGLE = "TOGGLE",
   UPDATE = "UPDATE",
+  LOAD = "LOAD",
 }
 
 interface TodoCreate {
@@ -37,8 +38,17 @@ interface TodoUpdate {
   type: TodoActions.UPDATE;
   payload: { id: string; title: string };
 }
+interface TodoLoadData {
+  type: TodoActions.LOAD;
+  payload: State;
+}
 
-type TodoActionType = TodoCreate | TodoDelete | TodoToggle | TodoUpdate;
+type TodoActionType =
+  | TodoCreate
+  | TodoDelete
+  | TodoToggle
+  | TodoUpdate
+  | TodoLoadData;
 
 function todoReducer(state: State, action: TodoActionType) {
   switch (action.type) {
@@ -85,10 +95,13 @@ function todoReducer(state: State, action: TodoActionType) {
         },
       };
     }
+    case TodoActions.LOAD: {
+      return action.payload;
+    }
     default:
       return state;
   }
 }
 
 export { todoReducer, TodoActions };
-export type { TodoActionType };
+export type { TodoActionType, State };
