@@ -74,7 +74,7 @@ function todoReducer(state: State, action: TodoActionType) {
       return {
         ...state,
         deleted: [...state.deleted, action.payload],
-        todo: state.todo.filter((taskId) => taskId != action.payload),
+        todo: state.todo.filter((taskId) => taskId !== action.payload),
       };
     }
     case TodoActions.TOGGLE: {
@@ -110,7 +110,7 @@ function todoReducer(state: State, action: TodoActionType) {
       return {
         ...state,
         todo: [...state.todo, action.payload],
-        deleted: state.deleted.filter((taskId) => taskId != action.payload),
+        deleted: state.deleted.filter((taskId) => taskId !== action.payload),
       };
     }
     default:
