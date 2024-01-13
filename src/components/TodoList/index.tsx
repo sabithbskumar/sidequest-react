@@ -86,7 +86,7 @@ function TodoList() {
         </label>
         <br />
       </div>
-      <ul className="list-disc">
+      <div>
         {getList().map((id) => {
           const { title, completed } = tasks.tasks[id];
           return (
@@ -154,7 +154,7 @@ function TodoList() {
             </div>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }
