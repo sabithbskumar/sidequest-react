@@ -65,7 +65,7 @@ function Currency() {
   }
 
   return (
-    <div className="h-full p-2 overflow-y-auto">
+    <div className="p-2">
       <form
         onSubmit={handleNewTransaction}
         className="flex p-2 max-w-lg m-auto"

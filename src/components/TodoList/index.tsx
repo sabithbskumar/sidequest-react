@@ -45,7 +45,7 @@ function TodoList() {
   }
 
   return (
-    <div className="h-full p-2 overflow-y-auto">
+    <div className="p-2">
       <form onSubmit={handleAdd} className="flex p-2 max-w-lg m-auto">
         <input
           type="text"

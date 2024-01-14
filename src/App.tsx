@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { Header } from "./components/Header";
 import { TodoList } from "./components/TodoList";
@@ -15,13 +15,27 @@ function App() {
   }
   const [page, setPage] = useState("quests");
 
+  const [isSidebarVisible, setIsSideBarVisible] = useState(false);
+
+  useEffect(() => {
+    setIsSideBarVisible(false);
+  }, [page]);
+
   return (
-    <div className="bg-neutral-800 text-neutral-50 flex flex-col h-full">
-      <Header />
+    <div className="bg-neutral-800 transition-colors text-neutral-50 flex flex-col h-full">
       <div className="grow overflow-hidden flex">
-        <div className="h-full w-full max-w-xs bg-neutral-700 flex flex-col p-2 gap-2">
+        <div
+          className={`h-full landscape:w-full max-w-none md:max-w-xs landscape:max-w-xs overflow-hidden overflow-y-auto ${
+            isSidebarVisible ? "portrait:w-8/12" : "portrait:w-0"
+          } shrink-0 min-w-0 transition-[width] bg-neutral-800 flex flex-col gap-2`}
+        >
+          <div className="pb-5">
+            <Header />
+          </div>
           <button
-            className={page === "quests" ? "bg-blue-500" : "bg-neutral-600"}
+            className={`mx-2 ${
+              page === "quests" ? "bg-blue-500" : "bg-neutral-600"
+            }`}
             onClick={() => {
               setPage("quests");
             }}
@@ -29,7 +43,9 @@ function App() {
             Quests
           </button>
           <button
-            className={page === "currency" ? "bg-blue-500" : "bg-neutral-600"}
+            className={`mx-2 ${
+              page === "currency" ? "bg-blue-500" : "bg-neutral-600"
+            }`}
             onClick={() => {
               setPage("currency");
             }}
@@ -37,7 +53,24 @@ function App() {
             Currency
           </button>
         </div>
-        <div className="w-full">
+        <div
+          className={`w-full portrait:shrink-0 bg-neutral-700 p-2 transition-[margin_border] ${
+            isSidebarVisible
+              ? "portrait:rounded-3xl portrait:m-8"
+              : "portrait:m-0"
+          } overflow-hidden overflow-y-auto max-w-full`}
+          onClick={() => {
+            if (isSidebarVisible) setIsSideBarVisible(false);
+          }}
+        >
+          <span
+            className="landscape:hidden font-bold text-4xl p-2"
+            onClick={() => {
+              setIsSideBarVisible(!isSidebarVisible);
+            }}
+          >
+            &#x1d118;
+          </span>
           <Page />
         </div>
       </div>
