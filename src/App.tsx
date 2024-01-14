@@ -3,6 +3,8 @@ import "./App.css";
 import { Header } from "./components/Header";
 import { TodoList } from "./components/TodoList";
 import { Currency } from "./components/Currency";
+import HamburgerIcon from "~icons/material-symbols-light/menu-rounded";
+import CloseIcon from "~icons/material-symbols-light/close";
 
 function App() {
   function Page() {
@@ -66,12 +68,16 @@ function App() {
           }}
         >
           <span
-            className="landscape:hidden font-bold text-4xl p-2"
+            className="landscape:hidden"
             onClick={() => {
               setIsSideBarVisible(!isSidebarVisible);
             }}
           >
-            &#x1d118;
+            {isSidebarVisible ? (
+              <CloseIcon className="size-10" />
+            ) : (
+              <HamburgerIcon className="size-10" />
+            )}
           </span>
           <Page />
         </div>
