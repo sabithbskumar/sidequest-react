@@ -45,48 +45,54 @@ function TodoList() {
   }
 
   return (
-    <div className="p-2">
-      <form onSubmit={handleAdd} className="flex p-2 max-w-lg m-auto">
-        <input
-          type="text"
-          className="grow px-4 py-2 text-neutral-600 outline-none"
-          placeholder="Task name"
-          value={taskName}
-          onChange={(e) => {
-            setTaskName(e.target.value);
-          }}
-        />
-        <input type="submit" value="Add" className="bg-neutral-500 px-4 py-2" />
-      </form>
-      <div className="flex gap-2 px-4">
-        <label>
+    <div className="flex flex-col w-full max-h-full h-full">
+      <div className="shrink-0">
+        <form onSubmit={handleAdd} className="flex p-2 max-w-lg m-auto">
           <input
-            type="radio"
-            name="filter"
-            value={Filters.TODO}
-            checked={filter === Filters.TODO}
+            type="text"
+            className="grow px-4 py-2 text-neutral-600 outline-none"
+            placeholder="Task name"
+            value={taskName}
             onChange={(e) => {
-              setFilter(e.target.value as Filters);
+              setTaskName(e.target.value);
             }}
           />
-          <span className="p-2">ToDo</span>
-        </label>
-        <br />
-        <label>
           <input
-            type="radio"
-            name="filter"
-            value={Filters.TRASH}
-            checked={filter === Filters.TRASH}
-            onChange={(e) => {
-              setFilter(e.target.value as Filters);
-            }}
+            type="submit"
+            value="Add"
+            className="bg-neutral-500 px-4 py-2"
           />
-          <span className="p-2">Trash</span>
-        </label>
-        <br />
+        </form>
+        <div className="flex gap-2 px-4">
+          <label>
+            <input
+              type="radio"
+              name="filter"
+              value={Filters.TODO}
+              checked={filter === Filters.TODO}
+              onChange={(e) => {
+                setFilter(e.target.value as Filters);
+              }}
+            />
+            <span className="p-2">ToDo</span>
+          </label>
+          <br />
+          <label>
+            <input
+              type="radio"
+              name="filter"
+              value={Filters.TRASH}
+              checked={filter === Filters.TRASH}
+              onChange={(e) => {
+                setFilter(e.target.value as Filters);
+              }}
+            />
+            <span className="p-2">Trash</span>
+          </label>
+          <br />
+        </div>
       </div>
-      <div>
+      <div className="grow overflow-y-auto h-full max-h-full break-all">
         {getList().map((id) => {
           const { title, completed } = tasks.tasks[id];
           return (
