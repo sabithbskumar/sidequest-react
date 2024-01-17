@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useReducer, useState } from "react";
 import { State, TodoActions, todoReducer } from "../../features/todo";
+import AddIcon from "~icons/material-symbols-light/add";
 
 function TodoList() {
   const defaultState = {
@@ -21,6 +22,7 @@ function TodoList() {
     if (taskName.trim() === "") return;
     dispatch({ type: TodoActions.CREATE, payload: taskName });
     setTaskName("");
+    setIsModalVisible(false);
   }
 
   useEffect(() => {
@@ -44,25 +46,11 @@ function TodoList() {
     }
   }
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   return (
-    <div className="flex flex-col w-full max-h-full h-full">
+    <div className="flex flex-col w-full max-h-full h-full relative">
       <div className="shrink-0">
-        <form onSubmit={handleAdd} className="flex p-2 max-w-lg m-auto">
-          <input
-            type="text"
-            className="grow px-4 py-2 text-neutral-600 outline-none"
-            placeholder="Task name"
-            value={taskName}
-            onChange={(e) => {
-              setTaskName(e.target.value);
-            }}
-          />
-          <input
-            type="submit"
-            value="Add"
-            className="bg-neutral-500 px-4 py-2"
-          />
-        </form>
         <div className="flex gap-2 px-4">
           <label>
             <input
@@ -161,6 +149,56 @@ function TodoList() {
           );
         })}
       </div>
+      <button
+        className="w-14 h-14 transition-[width] hover:w-48 bg-blue-500 absolute rounded-2xl right-4 bottom-4 group/add flex items-center justify-start"
+        onClick={() => {
+          setIsModalVisible(true);
+        }}
+      >
+        <AddIcon className="w-auto h-full p-2 shrink-0" />
+        <span className="hidden group-hover/add:block whitespace-nowrap text-clip overflow-hidden">
+          Add Task
+        </span>
+      </button>
+      {isModalVisible ? (
+        <div className="bg-neutral-900/50 absolute flex inset-0 backdrop-blur-sm shadow-md">
+          <div className="grow max-w-2xl max-h-full mx-auto p-5">
+            <div className="w-full h-full bg-neutral-500/50 py-4 rounded-lg flex flex-col">
+              <h2 className="text-center pt-2 pb-6 text-2xl">New Task</h2>
+              <form
+                onSubmit={handleAdd}
+                className="m-auto px-4 w-full grow flex flex-col justify-between"
+              >
+                <input
+                  type="text"
+                  className="w-full p-4 rounded text-neutral-600 outline-none"
+                  placeholder="Task name"
+                  value={taskName}
+                  onChange={(e) => {
+                    setTaskName(e.target.value);
+                  }}
+                  autoFocus={true}
+                />
+                <div className="flex gap-4">
+                  <input
+                    type="button"
+                    value="Cancel"
+                    className="bg-neutral-500 px-4 w-full p-4 rounded cursor-pointer"
+                    onClick={() => {
+                      setIsModalVisible(false);
+                    }}
+                  />
+                  <input
+                    type="submit"
+                    value="Add"
+                    className="bg-blue-500 px-4 w-full p-4 rounded cursor-pointer"
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
