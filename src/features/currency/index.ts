@@ -68,12 +68,12 @@ function transactionReducer(state: State, action: TransactionActions) {
       };
     }
     case TransactionAction.UPDATE: {
-      const { id, amount, note } = action.payload;
+      const { id, ...data } = action.payload;
       return {
         ...state,
         transactionRecords: {
           ...state.transactionRecords,
-          [id]: { ...state.transactionRecords[id], amount, note },
+          [id]: { ...state.transactionRecords[id], ...data },
         },
       };
     }

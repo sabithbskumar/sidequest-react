@@ -2,10 +2,10 @@ import { ChangeEvent, FormEvent, useEffect, useReducer, useState } from "react";
 import {
   State,
   TransactionAction,
-  TransactionData,
   transactionReducer,
 } from "../../features/currency";
 import AddIcon from "~icons/material-symbols-light/add";
+import { Modal } from "../Modal";
 
 function Currency() {
   const defaultState = {
@@ -25,34 +25,11 @@ function Currency() {
     localStorage.setItem("transactions", JSON.stringify(transactions));
   }, [transactions]);
 
-  const initialFormState = {
-    amount: "",
-    note: "",
-    type: "expense",
-  };
-  const [transactionData, setTransactionData] =
-    useState<TransactionData>(initialFormState);
-
-  function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-    setTransactionData((prev) => {
-      return {
-        ...prev,
-        [e.target.name]: e.target.value,
-      };
-    });
-  }
-
-  function handleNewTransaction(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    dispatch({ type: TransactionAction.CREATE, payload: transactionData });
-    setTransactionData(initialFormState);
-    setIsModalVisible(false);
-  }
-
   enum Filters {
     TRANSACTIONS = "TRANSACTIONS",
     TRASH = "TRASH",
   }
+
   const [filter, setFilter] = useState(Filters.TRANSACTIONS);
 
   function getList() {
@@ -66,7 +43,23 @@ function Currency() {
     }
   }
 
+  function handleSubmit(transactionData: TransactionFormData) {
+    const { id, ...data } = transactionData;
+    if (id) {
+      dispatch({
+        type: TransactionAction.UPDATE,
+        payload: { id, ...data },
+      });
+    } else {
+      dispatch({
+        type: TransactionAction.CREATE,
+        payload: { ...data },
+      });
+    }
+  }
+
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editTransactionId, setEditTransactionId] = useState("");
 
   return (
     <div className="flex flex-col max-h-full h-full w-full relative">
@@ -114,17 +107,8 @@ function Currency() {
               <button
                 className={`opacity-0 group-hover/transaction:opacity-100 px-2`}
                 onClick={() => {
-                  const newAmount = prompt("Amount", amount);
-                  if (newAmount)
-                    dispatch({
-                      type: TransactionAction.UPDATE,
-                      payload: {
-                        id,
-                        amount: newAmount,
-                        type,
-                        note,
-                      },
-                    });
+                  setEditTransactionId(id);
+                  setIsModalVisible(true);
                 }}
               >
                 Edit
@@ -169,84 +153,154 @@ function Currency() {
           Add Transaction
         </span>
       </button>
-      {isModalVisible ? (
-        <div className="bg-neutral-900/50 absolute flex inset-0 backdrop-blur-sm shadow-md">
-          <div className="grow max-w-2xl max-h-full mx-auto p-5">
-            <div className="w-full h-full bg-neutral-500/50 py-4 rounded-lg flex flex-col">
-              <h2 className="text-center pt-2 pb-6 text-2xl">
-                New Transaction
-              </h2>
-              <form
-                onSubmit={handleNewTransaction}
-                className="m-auto px-4 w-full grow flex flex-col justify-between"
-              >
-                <div className="flex flex-col gap-4">
-                  <div className="flex">
-                    <label>
-                      <input
-                        type="radio"
-                        name="type"
-                        value="expense"
-                        checked={transactionData.type === "expense"}
-                        onChange={handleChange}
-                      />
-                      <span className="p-2">Expense</span>
-                    </label>
-                    <br />
-                    <label>
-                      <input
-                        type="radio"
-                        name="type"
-                        value="income"
-                        checked={transactionData.type === "income"}
-                        onChange={handleChange}
-                      />
-                      <span className="p-2">Income</span>
-                    </label>
-                  </div>
-                  <div className="flex">
-                    <input
-                      type="number"
-                      className="w-40 p-4 text-neutral-600 outline-none rounded-s"
-                      placeholder="Amount"
-                      name="amount"
-                      value={transactionData.amount}
-                      onChange={handleChange}
-                      required={true}
-                      autoFocus={true}
-                    />
-                    <input
-                      type="text"
-                      className="grow p-4 text-neutral-600 outline-none rounded-e"
-                      placeholder="Note"
-                      name="note"
-                      value={transactionData.note}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <input
-                    type="button"
-                    value="Cancel"
-                    className="bg-neutral-500 px-4 w-full p-4 rounded cursor-pointer"
-                    onClick={() => {
-                      setIsModalVisible(false);
-                    }}
-                  />
-                  <input
-                    type="submit"
-                    value="Add"
-                    className="bg-blue-500 px-4 w-full p-4 rounded cursor-pointer"
-                  />
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <Modal isVisible={isModalVisible}>
+        {editTransactionId === "" ? (
+          <TransactionForm
+            transactionData={{
+              amount: "",
+              note: "",
+              type: "expense",
+            }}
+            formOptions={{
+              heading: "New Transaction",
+              primaryLabel: "Add",
+            }}
+            onCancel={() => {
+              setIsModalVisible(false);
+            }}
+            onSubmit={handleSubmit}
+          />
+        ) : (
+          <TransactionForm
+            transactionData={{
+              id: editTransactionId,
+              ...transactions.transactionRecords[editTransactionId],
+            }}
+            formOptions={{
+              heading: "Edit Transaction",
+              primaryLabel: "Edit",
+            }}
+            onCancel={() => {
+              setEditTransactionId("");
+              setIsModalVisible(false);
+            }}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </Modal>
     </div>
   );
 }
 
 export { Currency };
+
+interface TransactionFormData {
+  id?: string;
+  amount: string;
+  note: string;
+  type: string;
+}
+
+interface TransactionFormProps {
+  formOptions: {
+    heading: string;
+    primaryLabel: string;
+  };
+  transactionData: TransactionFormData;
+  onCancel: () => void;
+  onSubmit: (_: TransactionFormData) => void;
+}
+
+function TransactionForm({
+  formOptions,
+  transactionData,
+  onCancel,
+  onSubmit,
+}: TransactionFormProps) {
+  const initialValues = { ...transactionData };
+  const [formValues, setFormValues] = useState(initialValues);
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    setFormValues((prev) => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value,
+      };
+    });
+  }
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    onSubmit(formValues);
+    setFormValues(initialValues);
+    onCancel();
+  }
+  return (
+    <>
+      <h2 className="text-center pt-2 pb-6 text-2xl">{formOptions.heading}</h2>
+      <form
+        onSubmit={handleSubmit}
+        className="m-auto px-4 w-full grow flex flex-col justify-between"
+      >
+        <div className="flex flex-col gap-4">
+          <div className="flex">
+            <label>
+              <input
+                type="radio"
+                name="type"
+                value="expense"
+                checked={formValues.type === "expense"}
+                onChange={handleChange}
+              />
+              <span className="p-2">Expense</span>
+            </label>
+            <br />
+            <label>
+              <input
+                type="radio"
+                name="type"
+                value="income"
+                checked={formValues.type === "income"}
+                onChange={handleChange}
+              />
+              <span className="p-2">Income</span>
+            </label>
+          </div>
+          <div className="flex">
+            <input
+              type="number"
+              className="w-40 p-4 text-neutral-600 outline-none rounded-s"
+              placeholder="Amount"
+              name="amount"
+              value={formValues.amount}
+              onChange={handleChange}
+              required={true}
+              autoFocus={true}
+            />
+            <input
+              type="text"
+              className="grow p-4 text-neutral-600 outline-none rounded-e"
+              placeholder="Note"
+              name="note"
+              value={formValues.note}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+        <div className="flex gap-4">
+          <input
+            type="button"
+            value="Cancel"
+            className="bg-neutral-500 px-4 w-full p-4 rounded cursor-pointer"
+            onClick={onCancel}
+          />
+          <input
+            type="submit"
+            value={formOptions.primaryLabel}
+            className="bg-blue-500 px-4 w-full p-4 rounded cursor-pointer"
+          />
+        </div>
+      </form>
+    </>
+  );
+}

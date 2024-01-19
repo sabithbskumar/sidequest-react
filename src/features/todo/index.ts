@@ -25,7 +25,7 @@ enum TodoActions {
 
 interface TodoCreate {
   type: TodoActions.CREATE;
-  payload: string;
+  payload: { title: string };
 }
 interface TodoDelete {
   type: TodoActions.DELETE;
@@ -64,7 +64,7 @@ function todoReducer(state: State, action: TodoActionType) {
         ...state,
         tasks: {
           ...state.tasks,
-          [id]: createTask({ title: action.payload, dateCreated: id }),
+          [id]: createTask({ ...action.payload, dateCreated: id }),
         },
         todo: [...state.todo, id],
       };
