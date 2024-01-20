@@ -6,6 +6,7 @@ import {
 } from "../../features/currency";
 import AddIcon from "~icons/material-symbols-light/add";
 import { Modal } from "../Modal";
+import { TabBar } from "../TabBar";
 
 function Currency() {
   const defaultState = {
@@ -25,19 +26,17 @@ function Currency() {
     localStorage.setItem("transactions", JSON.stringify(transactions));
   }, [transactions]);
 
-  enum Filters {
+  enum Pages {
     TRANSACTIONS = "TRANSACTIONS",
     TRASH = "TRASH",
   }
 
-  const [filter, setFilter] = useState(Filters.TRANSACTIONS);
-
   function getList() {
-    switch (filter) {
-      case Filters.TRANSACTIONS: {
+    switch (page) {
+      case Pages.TRANSACTIONS: {
         return transactions.transactions;
       }
-      case Filters.TRASH: {
+      case Pages.TRASH: {
         return transactions.deleted;
       }
     }
@@ -61,37 +60,30 @@ function Currency() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editTransactionId, setEditTransactionId] = useState("");
 
+  const [page, setPage] = useState(Pages.TRANSACTIONS);
+
   return (
     <div className="flex flex-col max-h-full h-full w-full relative">
       <div className="shrink-0">
-        <div className="flex gap-2 px-4">
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value={Filters.TRANSACTIONS}
-              checked={filter === Filters.TRANSACTIONS}
-              onChange={(e) => {
-                setFilter(e.target.value as Filters);
-              }}
-            />
-            <span className="p-2">Transaction</span>
-          </label>
-          <br />
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value={Filters.TRASH}
-              checked={filter === Filters.TRASH}
-              onChange={(e) => {
-                setFilter(e.target.value as Filters);
-              }}
-            />
-            <span className="p-2">Trash</span>
-          </label>
-          <br />
-        </div>
+        <TabBar
+          options={[
+            {
+              label: "Transactions",
+              value: Pages.TRANSACTIONS,
+            },
+
+            {
+              label: "Trash",
+              value: Pages.TRASH,
+            },
+          ]}
+          name="page"
+          value={page}
+          onChange={(value) => {
+            console.log(value);
+            setPage(value as Pages);
+          }}
+        />
       </div>
       <div className="grow max-w-full overflow-y-auto h-full max-h-full break-all">
         {getList().map((id) => {
