@@ -2,6 +2,7 @@ import { ChangeEvent, FormEvent, useEffect, useReducer, useState } from "react";
 import { State, TodoActions, todoReducer } from "../../features/todo";
 import AddIcon from "~icons/material-symbols-light/add";
 import { Modal } from "../Modal";
+import { TabBar } from "../TabBar";
 
 function TodoList() {
   const defaultState = {
@@ -20,18 +21,17 @@ function TodoList() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
-  enum Filters {
+  enum Pages {
     TODO = "TODO",
     TRASH = "TRASH",
   }
-  const [filter, setFilter] = useState(Filters.TODO);
 
   function getList() {
-    switch (filter) {
-      case Filters.TODO: {
+    switch (page) {
+      case Pages.TODO: {
         return tasks.todo;
       }
-      case Filters.TRASH: {
+      case Pages.TRASH: {
         return tasks.deleted;
       }
     }
@@ -55,37 +55,30 @@ function TodoList() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editTaskId, setEditTaskId] = useState("");
 
+  const [page, setPage] = useState(Pages.TODO);
+
   return (
     <div className="flex flex-col w-full max-h-full h-full relative">
       <div className="shrink-0">
-        <div className="flex gap-2 px-4">
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value={Filters.TODO}
-              checked={filter === Filters.TODO}
-              onChange={(e) => {
-                setFilter(e.target.value as Filters);
-              }}
-            />
-            <span className="p-2">ToDo</span>
-          </label>
-          <br />
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value={Filters.TRASH}
-              checked={filter === Filters.TRASH}
-              onChange={(e) => {
-                setFilter(e.target.value as Filters);
-              }}
-            />
-            <span className="p-2">Trash</span>
-          </label>
-          <br />
-        </div>
+        <TabBar
+          options={[
+            {
+              label: "ToDo",
+              value: Pages.TODO,
+            },
+
+            {
+              label: "Trash",
+              value: Pages.TRASH,
+            },
+          ]}
+          name="page"
+          value={page}
+          onChange={(value) => {
+            console.log(value);
+            setPage(value as Pages);
+          }}
+        />
       </div>
       <div className="grow overflow-y-auto h-full max-h-full break-all">
         {getList().map((id) => {
