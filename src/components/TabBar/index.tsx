@@ -18,7 +18,7 @@ function TabBar({ options, name, value, onChange }: TabBarProps) {
     <div className="inline-flex p-2 w-full lg:min-w-80 lg:w-auto">
       <div className="mx-auto flex justify-evenly gap-2 bg-neutral-600 p-2 rounded-md grow">
         {options.map(({ label, value: radioValue }, index) => (
-          <label key={index} className="grow">
+          <label key={index} className="grow basis-0">
             <input
               type="radio"
               name={name}
