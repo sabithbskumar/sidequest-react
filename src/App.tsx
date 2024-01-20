@@ -72,17 +72,22 @@ function App() {
         >
           <div className="h-full w-full flex flex-col min-h-0">
             <div className="shrink-0">
-              <div
-                className="landscape:hidden p-2"
-                onClick={() => {
-                  setIsSideBarVisible(!isSidebarVisible);
-                }}
-              >
-                {isSidebarVisible ? (
-                  <CloseIcon className="size-10" />
-                ) : (
-                  <HamburgerIcon className="size-10" />
-                )}
+              <div className="flex h-14 items-center landscape:pl-2">
+                <button
+                  className="landscape:hidden p-2 inline-flex"
+                  onClick={() => {
+                    setIsSideBarVisible(!isSidebarVisible);
+                  }}
+                >
+                  {isSidebarVisible ? (
+                    <CloseIcon className="size-10" />
+                  ) : (
+                    <HamburgerIcon className="size-10" />
+                  )}
+                </button>
+                <span className="capitalize text-2xl font-semibold">
+                  {page}
+                </span>
               </div>
             </div>
             <div className="grow overflow-auto min-h-0">
