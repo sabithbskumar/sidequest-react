@@ -116,7 +116,7 @@ function Currency() {
         />
         {page === Pages.TRANSACTIONS ? (
           <div className="inline-flex px-2 w-full lg:min-w-80 lg:w-auto">
-            <div className="mx-auto flex justify-evenly gap-2 p-2 grow">
+            <div className="mx-auto flex justify-evenly gap-2 p-2 grow flex-wrap">
               {Object.entries(tallyFinances()).map(([key, value]) => {
                 console.log();
                 return (
