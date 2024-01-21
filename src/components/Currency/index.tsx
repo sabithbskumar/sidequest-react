@@ -65,18 +65,18 @@ function Currency() {
         switch (record.type) {
           case "income":
             next.income = `${
-              parseInt(previous.income) + parseInt(record.amount)
+              parseFloat(previous.income) + parseFloat(record.amount)
             }`;
             next.balance = `${
-              parseInt(previous.balance) + parseInt(record.amount)
+              parseFloat(previous.balance) + parseFloat(record.amount)
             }`;
             break;
           case "expense":
             next.expense = `${
-              parseInt(previous.expense) + parseInt(record.amount)
+              parseFloat(previous.expense) + parseFloat(record.amount)
             }`;
             next.balance = `${
-              parseInt(previous.balance) - parseInt(record.amount)
+              parseFloat(previous.balance) - parseFloat(record.amount)
             }`;
             break;
         }
@@ -126,7 +126,7 @@ function Currency() {
                     <span className="capitalize font-bold">{key}</span>
                     <span
                       className={`font-semibold ${
-                        key === "expense" || parseInt(value) < 0
+                        key === "expense" || parseFloat(value) < 0
                           ? "text-red-500"
                           : "text-green-500"
                       }`}
@@ -324,6 +324,7 @@ function TransactionForm({
               placeholder="Amount"
               name="amount"
               min={0}
+              step="any"
               value={formValues.amount}
               onChange={handleChange}
               required={true}
