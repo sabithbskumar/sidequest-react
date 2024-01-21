@@ -64,26 +64,18 @@ function Currency() {
         const next = { ...previous };
         switch (record.type) {
           case "income":
-            next.income = `${
-              parseFloat(previous.income) + parseFloat(record.amount)
-            }`;
-            next.balance = `${
-              parseFloat(previous.balance) + parseFloat(record.amount)
-            }`;
+            next.income = previous.income + parseFloat(record.amount);
+            next.balance = previous.balance + parseFloat(record.amount);
             break;
           case "expense":
-            next.expense = `${
-              parseFloat(previous.expense) + parseFloat(record.amount)
-            }`;
-            next.balance = `${
-              parseFloat(previous.balance) - parseFloat(record.amount)
-            }`;
+            next.expense = previous.expense + parseFloat(record.amount);
+            next.balance = previous.balance - parseFloat(record.amount);
             break;
         }
 
         return next;
       },
-      { income: "0", expense: "0", balance: "0" }
+      { income: 0, expense: 0, balance: 0 }
     );
   }
 
@@ -126,12 +118,12 @@ function Currency() {
                     <span className="capitalize font-bold">{key}</span>
                     <span
                       className={`font-semibold ${
-                        key === "expense" || parseFloat(value) < 0
+                        key === "expense" || value < 0
                           ? "text-red-500"
                           : "text-green-500"
                       }`}
                     >
-                      {value}
+                      {value.toFixed(2)}
                     </span>
                   </div>
                 );
