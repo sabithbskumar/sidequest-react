@@ -57,6 +57,36 @@ function Currency() {
     }
   }
 
+  function tallyFinances() {
+    return transactions.transactions.reduce(
+      (previous, transactionId) => {
+        const record = transactions.transactionRecords[transactionId];
+        const next = { ...previous };
+        switch (record.type) {
+          case "income":
+            next.income = `${
+              parseInt(previous.income) + parseInt(record.amount)
+            }`;
+            next.balance = `${
+              parseInt(previous.balance) + parseInt(record.amount)
+            }`;
+            break;
+          case "expense":
+            next.expense = `${
+              parseInt(previous.expense) + parseInt(record.amount)
+            }`;
+            next.balance = `${
+              parseInt(previous.balance) - parseInt(record.amount)
+            }`;
+            break;
+        }
+
+        return next;
+      },
+      { income: "0", expense: "0", balance: "0" }
+    );
+  }
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editTransactionId, setEditTransactionId] = useState("");
 
@@ -64,7 +94,7 @@ function Currency() {
 
   return (
     <div className="flex flex-col max-h-full h-full w-full relative">
-      <div className="shrink-0">
+      <div className="shrink-0 flex flex-wrap">
         <TabBar
           options={[
             {
@@ -84,6 +114,24 @@ function Currency() {
             setPage(value as Pages);
           }}
         />
+        {page === Pages.TRANSACTIONS ? (
+          <div className="inline-flex px-2 w-full lg:min-w-80 lg:w-auto">
+            <div className="mx-auto flex justify-evenly gap-2 p-2 grow">
+              {Object.entries(tallyFinances()).map(([key, value]) => {
+                console.log();
+                return (
+                  <div
+                    key={key}
+                    className="flex flex-col px-2 text-center basis-0"
+                  >
+                    <span className="capitalize">{key}</span>
+                    <span>{value}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </div>
       <div className="grow max-w-full overflow-y-auto h-full max-h-full break-all">
         {getList().map((id) => {
