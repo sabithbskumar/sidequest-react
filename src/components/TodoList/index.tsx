@@ -66,7 +66,6 @@ function TodoList() {
               label: "ToDo",
               value: Pages.TODO,
             },
-
             {
               label: "Trash",
               value: Pages.TRASH,
@@ -75,20 +74,22 @@ function TodoList() {
           name="page"
           value={page}
           onChange={(value) => {
-            console.log(value);
             setPage(value as Pages);
           }}
         />
       </div>
-      <div className="grow overflow-y-auto h-full max-h-full break-all">
+      <div className="grow overflow-y-auto h-full max-h-full break-all flex flex-col gap-2 px-2 pt-2 pb-[5.5rem]">
         {getList().map((id) => {
           const { title, completed } = tasks.tasks[id];
           return (
-            <div key={id} className="px-4 py-2 group/task">
+            <div
+              key={id}
+              className="py-3 px-2 group/task rounded flex bg-neutral-600 bg-opacity-20 hover:bg-opacity-80 shadow-sm items-center max-w-5xl"
+            >
               <input
-                id={id}
                 type="checkbox"
                 checked={completed}
+                className="accent-green-400 m-2 size-4 shrink-0"
                 onChange={() => {
                   dispatch({
                     type: TodoActions.TOGGLE,
@@ -96,48 +97,42 @@ function TodoList() {
                   });
                 }}
               />
-              <label
-                htmlFor={id}
-                className={`px-2 font-bold${
-                  completed ? " text-green-500" : " text-orange-500"
+              <span
+                className={`px-1 font-bold truncate${
+                  completed ? " text-green-500" : " text-sky-500"
                 }`}
               >
                 {title}
-              </label>
-              <button
-                className={`opacity-0 group-hover/task:opacity-100 px-2`}
-                onClick={() => {
-                  setEditTaskId(id);
-                  setIsModalVisible(true);
-                }}
-              >
-                Edit
-              </button>
-              {tasks.deleted.includes(id) ? (
-                <button
-                  className={`opacity-0 group-hover/task:opacity-100 px-2`}
+              </span>
+              <div className="ml-auto hidden group-hover/task:inline-flex">
+                <input
+                  type="button"
+                  className="px-2 cursor-pointer"
                   onClick={() => {
-                    dispatch({
-                      type: TodoActions.RESTORE,
-                      payload: id,
-                    });
+                    setEditTaskId(id);
+                    setIsModalVisible(true);
                   }}
-                >
-                  Restore
-                </button>
-              ) : (
-                <button
-                  className={`opacity-0 group-hover/task:opacity-100 px-2`}
+                  value="Edit"
+                />
+                <input
+                  className="px-2 cursor-pointer"
+                  value={tasks.deleted.includes(id) ? "Restore" : "Delete"}
+                  type="button"
                   onClick={() => {
-                    dispatch({
-                      type: TodoActions.DELETE,
-                      payload: id,
-                    });
+                    if (tasks.deleted.includes(id)) {
+                      dispatch({
+                        type: TodoActions.RESTORE,
+                        payload: id,
+                      });
+                    } else {
+                      dispatch({
+                        type: TodoActions.DELETE,
+                        payload: id,
+                      });
+                    }
                   }}
-                >
-                  Delete
-                </button>
-              )}
+                />
+              </div>
             </div>
           );
         })}
@@ -171,7 +166,7 @@ function TodoList() {
             taskData={{ id: editTaskId, title: tasks.tasks[editTaskId].title }}
             formOptions={{
               heading: "Edit Task",
-              primaryLabel: "Edit",
+              primaryLabel: "Save",
             }}
             onCancel={() => {
               setEditTaskId("");

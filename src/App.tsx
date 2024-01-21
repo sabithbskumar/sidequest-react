@@ -65,7 +65,7 @@ function App() {
             isSidebarVisible
               ? "portrait:rounded-3xl portrait:m-4"
               : "portrait:m-0"
-          } max-h-full max-w-full overflow-clip flex min-h-0`}
+          } max-h-full grow overflow-hidden flex min-h-0`}
           onClick={() => {
             if (isSidebarVisible) setIsSideBarVisible(false);
           }}

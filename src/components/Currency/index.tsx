@@ -101,7 +101,6 @@ function Currency() {
               label: "Transactions",
               value: Pages.TRANSACTIONS,
             },
-
             {
               label: "Trash",
               value: Pages.TRASH,
@@ -116,16 +115,24 @@ function Currency() {
         />
         {page === Pages.TRANSACTIONS ? (
           <div className="inline-flex px-2 w-full lg:min-w-80 lg:w-auto">
-            <div className="mx-auto flex justify-evenly gap-2 p-2 grow flex-wrap">
+            <div className="mx-auto flex justify-evenly gap-2 p-2 grow flex-wrap min-w-0 md:min-w-96">
               {Object.entries(tallyFinances()).map(([key, value]) => {
                 console.log();
                 return (
                   <div
                     key={key}
-                    className="flex flex-col px-2 text-center basis-0"
+                    className="flex flex-col px-2 text-center basis-0 grow border-neutral-600 first-of-type:border-r last-of-type:border-l"
                   >
-                    <span className="capitalize">{key}</span>
-                    <span>{value}</span>
+                    <span className="capitalize font-bold">{key}</span>
+                    <span
+                      className={`font-semibold ${
+                        key === "expense" || parseInt(value) < 0
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
+                      {value}
+                    </span>
                   </div>
                 );
               })}
@@ -133,51 +140,56 @@ function Currency() {
           </div>
         ) : null}
       </div>
-      <div className="grow max-w-full overflow-y-auto h-full max-h-full break-all">
+      <div className="grow overflow-y-auto h-full max-h-full break-all flex flex-col gap-2 px-2 pt-2 pb-[5.5rem]">
         {getList().map((id) => {
           const { amount, note, type } = transactions.transactionRecords[id];
           return (
-            <div key={id} className="px-4 py-2 group/transaction">
-              {type === "income" ? (
-                <span className="text-green-500 font-bold">+{amount}</span>
-              ) : (
-                <span className="text-red-500 font-bold">-{amount}</span>
-              )}
-              <span className="p-3">{note}</span>
-              <button
-                className={`opacity-0 group-hover/transaction:opacity-100 px-2`}
-                onClick={() => {
-                  setEditTransactionId(id);
-                  setIsModalVisible(true);
-                }}
+            <div
+              key={id}
+              className="py-3 px-2 group/transaction rounded flex bg-neutral-600 bg-opacity-20 hover:bg-opacity-80 shadow-sm items-center max-w-5xl"
+            >
+              <span
+                className={`font-semibold shrink-0 before:font-mono ${
+                  type === "income"
+                    ? "text-green-500 before:content-['+']"
+                    : "text-red-500 before:content-['-']"
+                } before:px-1`}
               >
-                Edit
-              </button>
-              {transactions.deleted.includes(id) ? (
-                <button
-                  className={`opacity-0 group-hover/transaction:opacity-100 px-2`}
+                {amount}
+              </span>
+              <span className="px-3 truncate">{note}</span>
+
+              <div className="ml-auto hidden group-hover/transaction:inline-flex">
+                <input
+                  type="button"
+                  className="px-2 cursor-pointer"
                   onClick={() => {
-                    dispatch({
-                      type: TransactionAction.RESTORE,
-                      payload: id,
-                    });
+                    setEditTransactionId(id);
+                    setIsModalVisible(true);
                   }}
-                >
-                  Restore
-                </button>
-              ) : (
-                <button
-                  className={`opacity-0 group-hover/transaction:opacity-100 px-2`}
+                  value="Edit"
+                />
+                <input
+                  className="px-2 cursor-pointer"
+                  value={
+                    transactions.deleted.includes(id) ? "Restore" : "Delete"
+                  }
+                  type="button"
                   onClick={() => {
-                    dispatch({
-                      type: TransactionAction.DELETE,
-                      payload: id,
-                    });
+                    if (transactions.deleted.includes(id)) {
+                      dispatch({
+                        type: TransactionAction.RESTORE,
+                        payload: id,
+                      });
+                    } else {
+                      dispatch({
+                        type: TransactionAction.DELETE,
+                        payload: id,
+                      });
+                    }
                   }}
-                >
-                  Delete
-                </button>
-              )}
+                />
+              </div>
             </div>
           );
         })}
@@ -218,7 +230,7 @@ function Currency() {
             }}
             formOptions={{
               heading: "Edit Transaction",
-              primaryLabel: "Edit",
+              primaryLabel: "Save",
             }}
             onCancel={() => {
               setEditTransactionId("");
@@ -231,8 +243,6 @@ function Currency() {
     </div>
   );
 }
-
-export { Currency };
 
 interface TransactionFormData {
   id?: string;
@@ -275,6 +285,7 @@ function TransactionForm({
     setFormValues(initialValues);
     onCancel();
   }
+
   return (
     <>
       <h2 className="text-center pt-2 pb-6 text-2xl">{formOptions.heading}</h2>
@@ -306,12 +317,13 @@ function TransactionForm({
               <span className="p-2">Income</span>
             </label>
           </div>
-          <div className="flex">
+          <div className="flex flex-col gap-2">
             <input
               type="number"
-              className="w-40 p-4 text-neutral-600 outline-none rounded-s"
+              className="w-full min-w-0 p-4 text-neutral-600 outline-none rounded"
               placeholder="Amount"
               name="amount"
+              min={0}
               value={formValues.amount}
               onChange={handleChange}
               required={true}
@@ -319,7 +331,7 @@ function TransactionForm({
             />
             <input
               type="text"
-              className="grow p-4 text-neutral-600 outline-none rounded-e"
+              className="w-full min-w-0 p-4 text-neutral-600 outline-none rounded"
               placeholder="Note"
               name="note"
               value={formValues.note}
@@ -344,3 +356,5 @@ function TransactionForm({
     </>
   );
 }
+
+export { Currency };
