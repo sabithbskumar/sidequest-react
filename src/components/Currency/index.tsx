@@ -10,6 +10,9 @@ import { TabBar } from "../TabBar";
 import useToast from "../../hooks/useToast";
 import { Toast } from "../Toast";
 import { TransactionForm, TransactionFormData } from "./TransactionForm";
+import EditIcon from "~icons/material-symbols-light/edit-rounded";
+import DeleteIcon from "~icons/material-symbols-light/delete-rounded";
+import RestoreIcon from "~icons/material-symbols-light/restore-from-trash-rounded";
 
 function Currency() {
   const defaultState = {
@@ -144,51 +147,62 @@ function Currency() {
           return (
             <div
               key={id}
-              className="py-3 px-2 group/transaction rounded flex bg-neutral-600 bg-opacity-20 hover:bg-opacity-80 shadow-sm items-center max-w-5xl"
+              className="group/transaction rounded flex justify-between bg-neutral-600 bg-opacity-20 hover:bg-opacity-80 shadow-sm max-w-5xl h-14 overflow-clip"
             >
-              <span
-                className={`font-semibold shrink-0 before:font-mono ${
-                  type === "income"
-                    ? "text-green-500 before:content-['+']"
-                    : "text-red-500 before:content-['-']"
-                } before:px-1`}
-              >
-                {amount}
-              </span>
-              <span className="px-3 truncate">{note}</span>
-
-              <div className="ml-auto hidden group-hover/transaction:inline-flex">
-                <input
-                  type="button"
-                  className="px-2 cursor-pointer"
-                  onClick={() => {
-                    setEditTransactionId(id);
-                    setIsModalVisible(true);
-                  }}
-                  value="Edit"
-                />
-                <input
-                  className="px-2 cursor-pointer"
-                  value={
-                    transactions.deleted.includes(id) ? "Restore" : "Delete"
-                  }
-                  type="button"
-                  onClick={() => {
-                    if (transactions.deleted.includes(id)) {
-                      dispatch({
-                        type: TransactionAction.RESTORE,
-                        payload: id,
-                      });
-                      showToast(`Transaction Restored`);
-                    } else {
-                      dispatch({
-                        type: TransactionAction.DELETE,
-                        payload: id,
-                      });
-                      showToast(`Transaction Deleted`);
-                    }
-                  }}
-                />
+              <div className="grow p-2 h-full inline-flex items-center gap-2 overflow-hidden">
+                <span
+                  className={`px-2 font-semibold shrink-0 before:font-mono ${
+                    type === "income"
+                      ? "text-green-500 before:content-['+']"
+                      : "text-red-500 before:content-['-']"
+                  } before:px-1`}
+                >
+                  {amount}
+                </span>
+                <span className="px-3 truncate">{note}</span>
+              </div>
+              <div className="shrink-0 max-w-0 group-hover/transaction:max-w-28 group-hover/transaction:w-28 group-focus-within/transaction:max-w-28 group-focus-within/transaction:w-28 transition-[max-width]">
+                <div className="ml-auto h-full inline-flex">
+                  <button
+                    type="button"
+                    className="outline-none text-neutral-400 hover:text-white focus:ring-inset focus:ring rounded"
+                    onClick={() => {
+                      setEditTransactionId(id);
+                      setIsModalVisible(true);
+                    }}
+                  >
+                    <EditIcon className="size-14 p-3 shrink-0" />
+                  </button>
+                  {transactions.deleted.includes(id) ? (
+                    <button
+                      className="outline-none text-neutral-400 hover:text-white focus:ring-inset focus:ring rounded"
+                      type="button"
+                      onClick={() => {
+                        dispatch({
+                          type: TransactionAction.RESTORE,
+                          payload: id,
+                        });
+                        showToast(`Transaction Restored`);
+                      }}
+                    >
+                      <RestoreIcon className="size-14 p-3 shrink-0" />
+                    </button>
+                  ) : (
+                    <button
+                      className="outline-none text-neutral-400 hover:text-red-500 focus:ring-inset focus:ring rounded"
+                      type="button"
+                      onClick={() => {
+                        dispatch({
+                          type: TransactionAction.DELETE,
+                          payload: id,
+                        });
+                        showToast(`Transaction Deleted`);
+                      }}
+                    >
+                      <DeleteIcon className="size-14 p-3 shrink-0" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );

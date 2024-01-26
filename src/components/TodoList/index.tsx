@@ -6,6 +6,9 @@ import { TabBar } from "../TabBar";
 import { Toast } from "../Toast";
 import useToast from "../../hooks/useToast";
 import { TaskForm, TaskFormData } from "./TaskForm";
+import EditIcon from "~icons/material-symbols-light/edit-rounded";
+import DeleteIcon from "~icons/material-symbols-light/delete-rounded";
+import RestoreIcon from "~icons/material-symbols-light/restore-from-trash-rounded";
 
 function TodoList() {
   const defaultState = {
@@ -90,56 +93,70 @@ function TodoList() {
           return (
             <div
               key={id}
-              className="py-3 px-2 group/task rounded flex bg-neutral-600 bg-opacity-20 hover:bg-opacity-80 shadow-sm items-center max-w-5xl"
+              className="group/task rounded flex justify-between bg-neutral-600 bg-opacity-20 hover:bg-opacity-80 shadow-sm max-w-5xl h-14 overflow-clip"
             >
-              <input
-                type="checkbox"
-                checked={completed}
-                className="accent-green-400 m-2 size-4 shrink-0"
-                onChange={() => {
-                  dispatch({
-                    type: TodoActions.TOGGLE,
-                    payload: id,
-                  });
-                }}
-              />
-              <span
-                className={`px-1 font-bold truncate${
-                  completed ? " text-green-500" : " text-sky-500"
-                }`}
-              >
-                {title}
-              </span>
-              <div className="ml-auto hidden group-hover/task:inline-flex">
+              <div className="grow p-2 h-full inline-flex items-center gap-2 overflow-hidden">
                 <input
-                  type="button"
-                  className="px-2 cursor-pointer"
-                  onClick={() => {
-                    setEditTaskId(id);
-                    setIsModalVisible(true);
-                  }}
-                  value="Edit"
-                />
-                <input
-                  className="px-2 cursor-pointer"
-                  value={tasks.deleted.includes(id) ? "Restore" : "Delete"}
-                  type="button"
-                  onClick={() => {
-                    if (tasks.deleted.includes(id)) {
-                      dispatch({
-                        type: TodoActions.RESTORE,
-                        payload: id,
-                      });
-                      showToast(`Task Restored: ${title}`);
-                    } else {
-                      dispatch({
-                        type: TodoActions.DELETE,
-                        payload: id,
-                      });
-                      showToast(`Task Deleted: ${title}`);
-                    }
+                  type="checkbox"
+                  checked={completed}
+                  className="accent-green-400 m-2 size-4 shrink-0"
+                  onChange={() => {
+                    dispatch({
+                      type: TodoActions.TOGGLE,
+                      payload: id,
+                    });
                   }}
                 />
+                <span
+                  className={`font-bold truncate ${
+                    completed ? "text-green-500" : "text-sky-500"
+                  }`}
+                >
+                  {title}
+                </span>
+              </div>
+              <div className="shrink-0 max-w-0 group-hover/task:max-w-28 group-hover/task:w-28 group-focus-within/task:max-w-28 group-focus-within/task:w-28 transition-[max-width]">
+                <div className="ml-auto h-full inline-flex">
+                  <button
+                    type="button"
+                    className="outline-none text-neutral-400 hover:text-white focus:ring-inset focus:ring rounded"
+                    onClick={() => {
+                      setEditTaskId(id);
+                      setIsModalVisible(true);
+                    }}
+                  >
+                    <EditIcon className="size-14 p-3 shrink-0" />
+                  </button>
+                  {tasks.deleted.includes(id) ? (
+                    <button
+                      className="outline-none text-neutral-400 hover:text-white focus:ring-inset focus:ring rounded"
+                      type="button"
+                      onClick={() => {
+                        dispatch({
+                          type: TodoActions.RESTORE,
+                          payload: id,
+                        });
+                        showToast(`Task Restored: ${title}`);
+                      }}
+                    >
+                      <RestoreIcon className="size-14 p-3 shrink-0" />
+                    </button>
+                  ) : (
+                    <button
+                      className="outline-none text-neutral-400 hover:text-red-500 focus:ring-inset focus:ring rounded"
+                      type="button"
+                      onClick={() => {
+                        dispatch({
+                          type: TodoActions.DELETE,
+                          payload: id,
+                        });
+                        showToast(`Task Deleted: ${title}`);
+                      }}
+                    >
+                      <DeleteIcon className="size-14 p-3 shrink-0" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );
