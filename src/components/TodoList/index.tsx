@@ -3,6 +3,8 @@ import { State, TodoActions, todoReducer } from "../../features/todo";
 import AddIcon from "~icons/material-symbols-light/add";
 import { Modal } from "../Modal";
 import { TabBar } from "../TabBar";
+import { Toast } from "../Toast";
+import useToast from "../../hooks/useToast";
 
 function TodoList() {
   const defaultState = {
@@ -17,15 +19,21 @@ function TodoList() {
     : defaultState;
 
   const [tasks, dispatch] = useReducer(todoReducer, initialState);
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
+
+  const { showToast, toastState } = useToast();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editTaskId, setEditTaskId] = useState("");
 
   enum Pages {
     TODO = "TODO",
     TRASH = "TRASH",
   }
+  const [page, setPage] = useState(Pages.TODO);
 
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
   function getList() {
     switch (page) {
       case Pages.TODO: {
@@ -44,18 +52,15 @@ function TodoList() {
         type: TodoActions.UPDATE,
         payload: { id, title },
       });
+      showToast(`Task Updated: ${title}`);
     } else {
       dispatch({
         type: TodoActions.CREATE,
         payload: { title },
       });
+      showToast(`Task Created: ${title}`);
     }
   }
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editTaskId, setEditTaskId] = useState("");
-
-  const [page, setPage] = useState(Pages.TODO);
 
   return (
     <div className="flex flex-col w-full max-h-full h-full relative">
@@ -124,11 +129,13 @@ function TodoList() {
                         type: TodoActions.RESTORE,
                         payload: id,
                       });
+                      showToast(`Task Restored: ${title}`);
                     } else {
                       dispatch({
                         type: TodoActions.DELETE,
                         payload: id,
                       });
+                      showToast(`Task Deleted: ${title}`);
                     }
                   }}
                 />
@@ -176,6 +183,7 @@ function TodoList() {
           />
         )}
       </Modal>
+      <Toast {...toastState} />
     </div>
   );
 }

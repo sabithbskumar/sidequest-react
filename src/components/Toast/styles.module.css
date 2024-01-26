@@ -1,0 +1,12 @@
+.fade-up {
+  animation: fade-up 0.4s ease-out;
+}
+
+@keyframes fade-up {
+  from {
+    @apply -bottom-4 opacity-0;
+  }
+  to {
+    @apply bottom-0 opacity-100;
+  }
+}

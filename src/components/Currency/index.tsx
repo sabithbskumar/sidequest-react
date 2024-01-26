@@ -7,6 +7,8 @@ import {
 import AddIcon from "~icons/material-symbols-light/add";
 import { Modal } from "../Modal";
 import { TabBar } from "../TabBar";
+import useToast from "../../hooks/useToast";
+import { Toast } from "../Toast";
 
 function Currency() {
   const defaultState = {
@@ -22,14 +24,20 @@ function Currency() {
 
   const [transactions, dispatch] = useReducer(transactionReducer, initialState);
 
-  useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-  }, [transactions]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editTransactionId, setEditTransactionId] = useState("");
 
   enum Pages {
     TRANSACTIONS = "TRANSACTIONS",
     TRASH = "TRASH",
   }
+  const [page, setPage] = useState(Pages.TRANSACTIONS);
+
+  const { showToast, toastState } = useToast();
+
+  useEffect(() => {
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+  }, [transactions]);
 
   function getList() {
     switch (page) {
@@ -49,11 +57,13 @@ function Currency() {
         type: TransactionAction.UPDATE,
         payload: { id, ...data },
       });
+      showToast(`Transaction Updated`);
     } else {
       dispatch({
         type: TransactionAction.CREATE,
         payload: { ...data },
       });
+      showToast(`Transaction Added`);
     }
   }
 
@@ -78,11 +88,6 @@ function Currency() {
       { income: 0, expense: 0, balance: 0 }
     );
   }
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editTransactionId, setEditTransactionId] = useState("");
-
-  const [page, setPage] = useState(Pages.TRANSACTIONS);
 
   return (
     <div className="flex flex-col max-h-full h-full w-full relative">
@@ -173,11 +178,13 @@ function Currency() {
                         type: TransactionAction.RESTORE,
                         payload: id,
                       });
+                      showToast(`Transaction Restored`);
                     } else {
                       dispatch({
                         type: TransactionAction.DELETE,
                         payload: id,
                       });
+                      showToast(`Transaction Deleted`);
                     }
                   }}
                 />
@@ -232,6 +239,7 @@ function Currency() {
           />
         )}
       </Modal>
+      <Toast {...toastState} />
     </div>
   );
 }
