@@ -6,15 +6,16 @@ import { Currency } from "./components/Currency";
 import HamburgerIcon from "~icons/material-symbols-light/menu-rounded";
 import CloseIcon from "~icons/material-symbols-light/close";
 
-function App() {
-  function Page() {
-    switch (page) {
-      case "quests":
-        return <TodoList />;
-      case "currency":
-        return <Currency />;
-    }
+function Page({ page }: { page: string }) {
+  switch (page) {
+    case "quests":
+      return <TodoList />;
+    case "currency":
+      return <Currency />;
   }
+}
+
+function App() {
   const [page, setPage] = useState("quests");
 
   const [isSidebarVisible, setIsSideBarVisible] = useState(false);
@@ -91,7 +92,7 @@ function App() {
               </div>
             </div>
             <div className="grow overflow-auto min-h-0">
-              <Page />
+              <Page page={page} />
             </div>
           </div>
         </div>
