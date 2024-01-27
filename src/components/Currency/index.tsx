@@ -116,13 +116,13 @@ function Currency() {
         />
         {page === Pages.TRANSACTIONS ? (
           <div className="inline-flex px-2 w-full lg:min-w-80 lg:w-auto">
-            <div className="mx-auto flex justify-evenly gap-2 p-2 grow flex-wrap min-w-0 md:min-w-96">
+            <div className="mx-auto grid grid-cols-3 divide-x divide-neutral-600 gap-2 p-2 grow flex-wrap min-w-0 md:min-w-96">
               {Object.entries(tallyFinances()).map(([key, value]) => {
                 console.log();
                 return (
                   <div
                     key={key}
-                    className="flex flex-col px-2 text-center basis-0 grow border-neutral-600 first-of-type:border-r last-of-type:border-l"
+                    className="flex flex-col px-2 text-center basis-0 grow"
                   >
                     <span className="capitalize font-bold">{key}</span>
                     <span
@@ -151,11 +151,11 @@ function Currency() {
             >
               <div className="grow p-2 h-full inline-flex items-center gap-2 overflow-hidden">
                 <span
-                  className={`px-2 font-semibold shrink-0 before:font-mono ${
+                  className={`px-2 font-semibold shrink-0 font-mono ${
                     type === "income"
                       ? "text-green-500 before:content-['+']"
                       : "text-red-500 before:content-['-']"
-                  } before:px-1`}
+                  } before:px-1 min-w-[10ch] border-r border-neutral-600`}
                 >
                   {amount}
                 </span>

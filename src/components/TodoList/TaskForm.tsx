@@ -44,6 +44,7 @@ function TaskForm({
     <>
       <h2 className="text-center pt-2 pb-6 text-2xl">{formOptions.heading}</h2>
       <form
+        autoComplete="off"
         onSubmit={handleSubmit}
         className="m-auto px-4 w-full grow flex flex-col justify-between"
       >
