@@ -4,14 +4,18 @@ interface State {
   tasks: Record<string, Task>;
 }
 
-interface Task {
+interface TaskData {
   title: string;
-  dateCreated: string;
+  description?: string;
   completed?: boolean;
 }
 
-function createTask({ dateCreated, title, completed = false }: Task) {
-  return { dateCreated, title, completed };
+interface Task extends TaskData {
+  dateCreated: string;
+}
+
+function createTask({ completed = false, ...data }: Task) {
+  return { completed, ...data };
 }
 
 enum TodoActions {
@@ -25,7 +29,7 @@ enum TodoActions {
 
 interface TodoCreate {
   type: TodoActions.CREATE;
-  payload: { title: string };
+  payload: TaskData;
 }
 interface TodoDelete {
   type: TodoActions.DELETE;
@@ -37,7 +41,7 @@ interface TodoToggle {
 }
 interface TodoUpdate {
   type: TodoActions.UPDATE;
-  payload: { id: string; title: string };
+  payload: { id: string } & TaskData;
 }
 interface TodoLoadData {
   type: TodoActions.LOAD;
@@ -90,16 +94,10 @@ function todoReducer(state: State, action: TodoActionType) {
       };
     }
     case TodoActions.UPDATE: {
-      const { id, title } = action.payload;
+      const { id, ...data } = action.payload;
       return {
         ...state,
-        tasks: {
-          ...state.tasks,
-          [id]: {
-            ...state.tasks[id],
-            title: title,
-          },
-        },
+        tasks: { ...state.tasks, [id]: { ...state.tasks[id], ...data } },
       };
     }
     case TodoActions.LOAD: {

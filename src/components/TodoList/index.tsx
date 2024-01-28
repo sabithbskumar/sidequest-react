@@ -51,19 +51,19 @@ function TodoList() {
   }
 
   function handleSubmit(taskData: TaskFormData) {
-    const { id, title } = taskData;
+    const { id, ...data } = taskData;
     if (id) {
       dispatch({
         type: TodoActions.UPDATE,
-        payload: { id, title },
+        payload: { id, ...data },
       });
-      showToast(`Task Updated: ${title}`);
+      showToast(`Task Updated: ${data.title}`);
     } else {
       dispatch({
         type: TodoActions.CREATE,
-        payload: { title },
+        payload: { ...data },
       });
-      showToast(`Task Created: ${title}`);
+      showToast(`Task Created: ${data.title}`);
     }
   }
 
@@ -165,7 +165,7 @@ function TodoList() {
           />
         ) : (
           <TaskForm
-            taskData={{ id: editTaskId, title: tasks.tasks[editTaskId].title }}
+            taskData={{ id: editTaskId, ...tasks.tasks[editTaskId] }}
             formOptions={{
               heading: "Edit Task",
               primaryLabel: "Save",
