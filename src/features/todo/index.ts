@@ -119,4 +119,4 @@ function todoReducer(state: State, action: TodoActionType) {
 }
 
 export { todoReducer, TodoActions };
-export type { TodoActionType, State };
+export type { TodoActionType, State, Task };
