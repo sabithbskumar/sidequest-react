@@ -140,15 +140,12 @@ function TodoList() {
         })}
       </div>
       <button
-        className="w-14 h-14 transition-[width] hover:w-48 bg-blue-500 absolute rounded-2xl right-4 bottom-4 group/add flex items-center justify-start"
+        className="size-14 bg-blue-500 absolute rounded-2xl right-4 bottom-4"
         onClick={() => {
           setIsModalVisible(true);
         }}
       >
         <AddIcon className="w-auto h-full p-2 shrink-0" />
-        <span className="hidden group-hover/add:block whitespace-nowrap text-clip overflow-hidden">
-          Add Task
-        </span>
       </button>
       <Modal isVisible={isModalVisible}>
         {editTaskId === "" ? (
