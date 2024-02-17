@@ -147,7 +147,7 @@ function Currency() {
           return (
             <div
               key={id}
-              className="group/transaction rounded flex justify-between bg-neutral-600 bg-opacity-20 hover:bg-opacity-80 shadow-sm max-w-5xl h-14 overflow-clip"
+              className="group/transaction rounded flex justify-between bg-neutral-600 bg-opacity-20 hover:bg-opacity-80 shadow-sm max-w-5xl h-14 overflow-clip shrink-0"
             >
               <div className="grow p-2 h-full inline-flex items-center gap-2 overflow-hidden">
                 <span
